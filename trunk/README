@@ -1,0 +1,50 @@
+fonehome - Remote access to machines behind firewalls
+
+fonehome allows remote access to machines behind firewalls using SSH
+port forwarding.
+
+The fonehome daemon runs on remote machine(s) behind some firewall that
+you either do not control or do not want to reconfigure, but which allows
+normal outgoing TCP connections. It uses SSH to connect to a fonehome
+server to which you have direct access. This SSH connection includes
+reverse-forwarded TCP ports which in turn allow you to connect back to
+the remote machine.
+
+Instructions:
+
+    First, on the server:
+
+        1. Install fonehome-server RPM
+
+        2. Edit /etc/fonehome/fonehome-ports.conf
+
+    Then, on each client:
+
+        1. Install fonehome RPM
+
+        2. Edit /etc/fonehome/fonehome.conf
+
+        3. Copy /home/fonehome/.ssh/id_rsa (on server) to
+           to /etc/fonehome/fonehome.key (on the client).
+
+        4. Run this command to confirm and accept the server's key:
+
+                $ fonehome -I
+
+        5. Enable and start the fonehome init service:
+
+                $ chkconfig --add fonehome
+                $ /etc/init.d/fonehome start
+
+    If you keep /etc/fonehome-ports.conf up-to-date on the server,
+    then you may find the following utilities useful:
+
+        fhshow - show all fonehome connections and corresponding client names
+        fhssh  - ssh(1) to your clients by name (in /etc/fonehome-ports.conf)
+        fhscp  - scp(1) to your clients by name (in /etc/fonehome-ports.conf)
+
+Home page: http://fonehome.googlecode.com/
+
+See COPYING for license. See CHANGES for change history.
+
+$Id$

@@ -1,0 +1,22 @@
+# $Id$
+
+#
+# This file contains a mapping from reverse-forwarded TCP port to originating client machine.
+# This file is used by the fhshow, fhssh, and fhscp utilities.
+#
+# Format:
+#
+#   PORT  MACHINE-NAME   [ DESCRIPTION OF WHAT PORT CONNECTS TO ON THE CLIENT ]
+#
+# Note: the first entry for a given machine should be the SSH server port (if any).
+#
+
+# server1 is reverse forwarding these two ports
+1200   server1   SSH server
+1201   server1   MySQL server
+
+# server2 is reverse forwarding these three ports
+1210   server2   SSH server
+1211   server2   MySQL server
+1213   server2   HTTP server
+
