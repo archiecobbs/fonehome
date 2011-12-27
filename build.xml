@@ -6,16 +6,31 @@
     <!-- Import ant macros -->
     <import file="src/build/macros.xml"/>
 
-    <target name="build" depends="clean">
-        <dellroad:rpmbuild specfile="${ant.project.name}.spec">
+    <!-- Properties -->
+    <dellroad:svnrevision/>
+    <property name="fonehome.version" value="1.0.${svn.revision}"/>
+    <property name="tarball.name" value="${ant.project.name}-${fonehome.version}"/>
+    <property name="tarball.file" value="${tarball.name}.tar.gz"/>
+
+    <target name="tarball">
+        <delete dir="build/${tarball.name}"/>
+        <mkdir dir="build/${tarball.name}"/>
+        <copy todir="build/${tarball.name}">
+            <fileset dir=".">
+                <include name="*"/>
+                <include name="src/build/**/*"/>
+                <include name="src/conf/**/*"/>
+                <include name="src/init.d/**/*"/>
+                <include name="src/scripts/**/*"/>
+            </fileset>
+        </copy>
+        <tar compression="gzip" basedir="build" includes="${tarball.name}/**/*" destfile="build/${tarball.file}"/>
+    </target>
+
+    <target name="build" depends="clean, tarball">
+        <dellroad:rpmbuild specfile="${ant.project.name}.spec" rpmflags="--define 'fonehome_version ${fonehome.version}'">
             <source-preparation>
-                <zip destfile="build/rpm/SOURCES/${ant.project.name}.zip">
-                    <zipfileset dir="src">
-                        <include name="conf/**/*"/>
-                        <include name="init.d/**/*"/>
-                        <include name="scripts/**/*"/>
-                    </zipfileset>
-                </zip>
+                <copy file="build/${tarball.file}" todir="build/rpm/SOURCES"/>
             </source-preparation>
         </dellroad:rpmbuild>
     </target>

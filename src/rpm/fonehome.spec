@@ -17,14 +17,14 @@
 %define retrydelay  30
 
 Name:           %{name}
-Version:        1.0.%{svn_revision}
+Version:        %{fonehome_version}
 Release:        1
 Summary:        Remote access to machines behind firewalls
 Group:          Utilities
 License:        Apache
 BuildRoot:      %{_tmppath}/%{name}-root
 Buildarch:      noarch
-Source:         %{name}.zip
+Source:         %{name}-%{version}.tar.gz
 URL:            http://code.google.com/p/%{name}/
 Requires:       openssh
 
@@ -36,7 +36,7 @@ rm -rf ${RPM_BUILD_ROOT}
 
 %prep
 rm -rf ${RPM_BUILD_ROOT}
-%setup -c
+%setup
 
 %build
 subst()
@@ -51,12 +51,12 @@ subst()
       -e 's|@fonehomeretry@|%{retrydelay}|g' \
       -e 's|@fonehomescript@|%{scriptfile}|g'
 }
-subst < conf/fonehome.conf.sample > fonehome.conf.sample
-subst < conf/fonehome-ports.conf.sample > fonehome-ports.conf.sample
-subst < scripts/fonehome-init.sh > fonehome-init
-subst < scripts/fonehome.sh > fonehome
-subst < scripts/fhshow.sh > fhshow
-subst < scripts/fhssh.sh > fhssh
+subst < src/conf/fonehome.conf.sample > fonehome.conf.sample
+subst < src/conf/fonehome-ports.conf.sample > fonehome-ports.conf.sample
+subst < src/scripts/fonehome-init.sh > fonehome-init
+subst < src/scripts/fonehome.sh > fonehome
+subst < src/scripts/fhshow.sh > fhshow
+subst < src/scripts/fhssh.sh > fhssh
 
 %install
 
