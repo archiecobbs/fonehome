@@ -1,0 +1,20 @@
+# $Id$
+
+#
+# This is a configuration file for the fonehome client.
+# See http://code.google.com/p/fonehome/ for details.
+#
+
+# Configure the server to connect to (REQUIRED).
+#SERVER='myhost.example.com'
+
+# Configure SSH command line flags. This minimal example allows reverse SSH connections via port 1234 on the server.
+# Consider also: -oCompression=yes, -oCheckHostIP=yes, -oLogLevel=.... See man ssh_config(5) for a complete list.
+SSH_FLAGS='-R1234:localhost:22'
+
+# Other stuff you can configure (with defaults shown)
+USERNAME='@fonehomeuser@'
+KEY_FILE='@fonehomekey@'
+RETRY_DELAY='@fonehomeretry@'
+KNOWN_HOSTS_FILE="@fonehomehosts@"
+
