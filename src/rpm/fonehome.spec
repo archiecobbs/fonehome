@@ -20,7 +20,7 @@ Name:           %{name}
 Version:        %{fonehome_version}
 Release:        1
 Summary:        Remote access to machines behind firewalls
-Group:          Utilities
+Group:          System/Daemons
 License:        Apache
 BuildRoot:      %{_tmppath}/%{name}-root
 Buildarch:      noarch
@@ -100,7 +100,7 @@ fi
 
 %package server
 Summary:        Server for %{name} SSH connections
-Group:          Utilities
+Group:          System/Daemons
 Requires(pre):  pwdutils
 Requires(pre):  openssh
 
