@@ -1,4 +1,4 @@
-#summary How to install an use fonehome
+#summary How to install and use fonehome
 #labels Featured
 
 == Introduction ==
