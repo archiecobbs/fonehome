@@ -1,4 +1,19 @@
-# $Id$
+#
+# spec file for package fonehome
+#
+# Copyright (c) 2012 Archie L. Cobbs <archie@dellroad.org>
+#
+# All modifications and additions to the file contributed by third parties
+# remain the property of their copyright owners, unless otherwise agreed
+# upon. The license for this file, and modifications and additions to the
+# file, is the same license as for the pristine package itself (unless the
+# license for the pristine package is not an Open Source License, in which
+# case the license is the MIT License). An "Open Source License" is a
+# license that conforms to the Open Source Definition (Version 1.9)
+# published by the Open Source Initiative.
+#
+# Please submit bugfixes or comments via http://bugs.opensuse.org/
+#
 
 %define name        fonehome
 %define username    %{name}
@@ -21,7 +36,7 @@ Version:        %{fonehome_version}
 Release:        1
 Summary:        Remote access to machines behind firewalls
 Group:          System/Daemons
-License:        Apache
+License:        Apache-2.0
 BuildRoot:      %{_tmppath}/%{name}-root
 Buildarch:      noarch
 Source:         %{name}-%{version}.tar.gz
@@ -59,16 +74,19 @@ subst < src/scripts/fhssh.sh > fhssh
 subst < src/man/fhssh.1 > fhssh.1
 subst < src/man/fhscp.1 > fhscp.1
 subst < src/man/fhshow.1 > fhshow.1
+subst < src/man/fonehome.1 > fonehome.1
 
 %install
 
 # init script
 install -d %{buildroot}%{_sysconfdir}/init.d
 install fonehome-init %{buildroot}%{initfile}
+install -d %{buildroot}%{_sbindir}
+ln -s %{initfile} %{buildroot}%{_sbindir}/rcfonehome
 
-# init man pages
+# man pages
 install -d %{buildroot}%{_mandir}/man1
-install fhs{sh,cp,how}.1 %{buildroot}%{_mandir}/man1/
+install *.1 %{buildroot}%{_mandir}/man1/
 
 # script files
 install -d %{buildroot}%{_bindir}
@@ -101,7 +119,9 @@ fi
 %attr(700,root,root) %dir %{confdir}
 %attr(755,root,root) %{initfile}
 %attr(755,root,root) %{scriptfile}
+%attr(755,root,root) %{_sbindir}/rcfonehome
 %defattr(644,root,root,755)
+%{_mandir}/man1/fonehome.1*
 %{pkgdir}
 
 %package server
@@ -168,7 +188,9 @@ fi
 %files server
 %defattr(644,root,root,755)
 %{pkgdir2}
-%{_mandir}/man1/*
+%{_mandir}/man1/fhssh.1*
+%{_mandir}/man1/fhscp.1*
+%{_mandir}/man1/fhshow.1*
 %attr(755,root,root) %{_bindir}/fhshow
 %attr(755,root,root) %{_bindir}/fhssh
 %attr(755,root,root) %{_bindir}/fhscp
