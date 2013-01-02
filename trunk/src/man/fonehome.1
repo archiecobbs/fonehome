@@ -1,0 +1,53 @@
+.\"  -*- nroff -*-
+.\"
+.Dd January 2, 2013
+.Dt FONEHOME 1
+.Os
+.Sh NAME
+.Nm fonehome
+.Nd establish connection to fonehome server
+.Sh SYNOPSIS
+.Nm fonehome
+.Bk -words
+.Op Fl f Ar config-file
+.Ek
+.Nm fonehome
+.Bk -words
+.Fl I
+.Ek
+.Sh DESCRIPTION
+.Nm
+is a wrapper for the
+.Xr ssh 1
+program.
+It creates a persistent no-pty
+.Xr ssh 1
+connection to a fonehome server.
+Normal and reverse port forwarding is setup according to the configuration in
+.Pa @conffile@ .
+.Pp
+Normally
+.Nm
+is run as a daemon from
+.Pa @initfile@ .
+However, upon first installation (or whenever a server's host key changes),
+reinitialization must be performed by running
+.Nm
+manually with the
+.Fl I
+flag.
+This step is required to confirm and accept the server's host key.
+.Sh OPTIONS
+.Bl -tag -width Ds
+.It Fl f config-file
+Use and alternate configuration file other than the default
+.Pa @conffile@ .
+.It Fl I
+Perform first-time initialization when connecting to a new server.
+.El
+.Sh SEE ALSO
+.Xr ssh 1 .
+.Rs
+.%T "fonehome: Remote access to machines behind firewalls"
+.%O http://code.google.com/p/fonehome/
+.Re
