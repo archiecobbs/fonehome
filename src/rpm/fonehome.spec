@@ -32,10 +32,9 @@ Requires:       openssh
 %{summary}.
 
 %clean
-rm -rf ${RPM_BUILD_ROOT}
+rm -rf %{buildroot}
 
 %prep
-rm -rf ${RPM_BUILD_ROOT}
 %setup
 
 %build
@@ -57,27 +56,34 @@ subst < src/scripts/fonehome-init.sh > fonehome-init
 subst < src/scripts/fonehome.sh > fonehome
 subst < src/scripts/fhshow.sh > fhshow
 subst < src/scripts/fhssh.sh > fhssh
+subst < src/man/fhssh.1 > fhssh.1
+subst < src/man/fhscp.1 > fhscp.1
+subst < src/man/fhshow.1 > fhshow.1
 
 %install
 
 # init script
-install -d ${RPM_BUILD_ROOT}%{_sysconfdir}/init.d
-install fonehome-init ${RPM_BUILD_ROOT}%{initfile}
+install -d %{buildroot}%{_sysconfdir}/init.d
+install fonehome-init %{buildroot}%{initfile}
+
+# init man pages
+install -d %{buildroot}%{_mandir}/man1
+install fhs{sh,cp,how}.1 %{buildroot}%{_mandir}/man1/
 
 # script files
-install -d ${RPM_BUILD_ROOT}%{_bindir}
-install fonehome fhshow fhssh ${RPM_BUILD_ROOT}/%{_bindir}/
-ln ${RPM_BUILD_ROOT}/%{_bindir}/fh{ssh,scp}
+install -d %{buildroot}%{_bindir}
+install fonehome fhs{sh,how} %{buildroot}/%{_bindir}/
+ln %{buildroot}/%{_bindir}/fhs{sh,cp}
 
 # config files
-install -d ${RPM_BUILD_ROOT}%{confdir}
-install -d ${RPM_BUILD_ROOT}%{pkgdir}
-install fonehome.conf.sample ${RPM_BUILD_ROOT}%{pkgdir}/
-install -d ${RPM_BUILD_ROOT}%{pkgdir2}
-install fonehome-ports.conf.sample ${RPM_BUILD_ROOT}%{pkgdir2}/
+install -d %{buildroot}%{confdir}
+install -d %{buildroot}%{pkgdir}
+install fonehome.conf.sample %{buildroot}%{pkgdir}/
+install -d %{buildroot}%{pkgdir2}
+install fonehome-ports.conf.sample %{buildroot}%{pkgdir2}/
 
 # fonehome user
-install -d ${RPM_BUILD_ROOT}%{homedir}/.ssh
+install -d %{buildroot}%{homedir}/.ssh
 
 %preun
 if [ "$1" -eq 0 ]; then
@@ -162,6 +168,7 @@ fi
 %files server
 %defattr(644,root,root,755)
 %{pkgdir2}
+%{_mandir}/man1/*
 %attr(755,root,root) %{_bindir}/fhshow
 %attr(755,root,root) %{_bindir}/fhssh
 %attr(755,root,root) %{_bindir}/fhscp
