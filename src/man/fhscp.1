@@ -1,0 +1,52 @@
+.\"  -*- nroff -*-
+.\"
+.Dd January 2, 2013
+.Dt FHSCP 1
+.Os
+.Sh NAME
+.Nm fhscp
+.Nd fonehome client file transfer utility
+.Sh SYNOPSIS
+.Nm fhscp
+.Bk -words
+.Op Ar scp-options
+.Sm off
+.Oo
+.Op Ar user No @
+.Ar fonehome-client1 No :
+.Oc Ns Ar file1
+.Sm on
+.Ar ...
+.Sm off
+.Oo
+.Op Ar user No @
+.Ar fonehome-client2 No :
+.Oc Ar file2
+.Sm on
+.Ek
+.Sh DESCRIPTION
+.Nm
+is a wrapper for the
+.Xr scp 1
+program.
+It transfers files via an
+.Xr scp 1
+connection to/from the named fonehome client through the client's
+reverse-forwared SSH port.
+.Pp
+Use of this utility requires that the client is properly listed in
+.Pa  @portsfile@
+and currently connected to the server.
+.Sh OPTIONS
+All options supported by
+.Xr scp 1
+are also supported by
+.Nm fhscp .
+.Sh SEE ALSO
+.Xr fhssh 1 ,
+.Xr fhshow 1 ,
+.Xr scp 1 .
+.Rs
+.%T "fonehome: Remote access to machines behind firewalls"
+.%O http://code.google.com/p/fonehome/
+.Re
