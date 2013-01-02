@@ -22,6 +22,7 @@
                 <include name="src/conf/**/*"/>
                 <include name="src/init.d/**/*"/>
                 <include name="src/scripts/**/*"/>
+                <include name="src/man/**/*"/>
             </fileset>
         </copy>
         <tar compression="gzip" basedir="build" includes="${tarball.name}/**/*" destfile="build/${tarball.file}"/>
