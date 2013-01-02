@@ -1,0 +1,44 @@
+.\"  -*- nroff -*-
+.\"
+.Dd January 2, 2013
+.Dt FHSHOW 1
+.Os
+.Sh NAME
+.Nm fhshow
+.Nd show connected fonehome clients
+.Sh SYNOPSIS
+.Nm fhshow
+.Sh DESCRIPTION
+When run on a fonehome server,
+.Nm
+shows all connected fonehome clients connected to that server.
+For each connected client, the
+.Xr sshd 8
+process and originating address and port are displayed,
+along with a list of that client's reverse-forwarded ports.
+.Pp
+Use of this utility requires that connected clients are properly listed in
+.Pa  @portsfile@
+and the current user is running as root.
+.Sh EXAMPLE
+Sample output:
+.Bd -literal -offset indent
+$ fhshow
+Fonehome SSHD 13847 from 12.34.56.78:34567:
+    Port 10010:  frank: Frank's Hot Dog Stand: SSH Server
+    Port 10011:  frank: Frank's Hot Dog Stand: MySQL Server
+    Port 10012:  frank: Frank's Hot Dog Stand: Apache Server
+Fonehome SSHD 23472 from 23.45.67.89:12345:
+    Port 10000:  bob: Bob's Restaurant: SSH Server
+Fonehome SSHD 24998 from 34.56.78.90:23456:
+    Port 10100:  grandma: Grandma's House: SSH Server
+.Ed
+.Sh SEE ALSO
+.Xr fhssh 1 ,
+.Xr fhscp 1 ,
+.Xr netstat 1 ,
+.Xr sshd 1 .
+.Rs
+.%T "fonehome: Remote access to machines behind firewalls"
+.%O http://code.google.com/p/fonehome/
+.Re
