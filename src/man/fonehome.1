@@ -24,27 +24,35 @@ It creates a persistent no-pty
 .Xr ssh 1
 connection to a fonehome server.
 Normal and reverse port forwarding is setup according to the configuration in
-.Pa @conffile@ .
+.Pa @fonehomeconf@ .
 .Pp
 Normally
 .Nm
 is run as a daemon from
-.Pa @initfile@ .
+.Pa @fonehomeinit@ .
 However, upon first installation (or whenever a server's host key changes),
-reinitialization must be performed by running
+an initialization step must be performed by running
 .Nm
 manually with the
 .Fl I
 flag.
-This step is required to confirm and accept the server's host key.
+This step allows the administrator to confirm and accept the server's host key.
 .Sh OPTIONS
 .Bl -tag -width Ds
-.It Fl f config-file
+.It Fl f Ar config-file
 Use and alternate configuration file other than the default
-.Pa @conffile@ .
+.Pa @fonehomeconf@ .
 .It Fl I
 Perform first-time initialization when connecting to a new server.
 .El
+.Sh FILES
+.Bl -tag -width Ds -compact
+.It Pa @fonehomeconf@
+Default configuration file.
+.It Pa @fonehomekey@
+Private SSH key file used to authenticate to the server.
+.It Pa @fonehomehosts@
+SSH known hosts file used to store and verify the server's public key.
 .Sh SEE ALSO
 .Xr ssh 1 .
 .Rs
