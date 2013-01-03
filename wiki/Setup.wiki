@@ -3,7 +3,7 @@
 
 == Introduction ==
 
-*fonehome* is designed to work with a single server and several clients. The clients use SSH to connect to the server. Each client connection opens one or more reverse SSH tunnels back to itself over the original client to server connection. This allows any process local to the server to connect back to services on the client (such as the client's own SSH server) simply by connecting to a local port on the server.
+*fonehome* is designed to work with a single server and several clients. The clients use SSH to connect to the server. Each client connection opens one or more reverse SSH tunnels back to itself over the original client-to-server connection. This allows any process local to the server to connect back to services on the client (such as the client's own SSH server) simply by connecting to a local port on the server.
 
 The key advantage of this setup is that it works even if the client is behind a firewall that only allows outgoing TCP connections (such as a NAT device). In addition, the client's SSH server can be configured to only listen on the loopback interface, increasing its security. This also makes the server a single choke point for access to all of the clients, which makes controlling that access among multiple users easier.
 
@@ -11,19 +11,25 @@ The *fonehome* daemon is designed to be robust, automatically reconnecting to th
 
 == Installation ==
 
-  # Install the *fonehome-server* RPM on the server. A new SSH public/private key pair will be automatically created. The private key will be stored in `/home/fonehome/.ssh/id_rsa`; this file will be securely copied to each client  (see below).
+  # Install the *fonehome-server* RPM on the server. A new SSH public/private key pair will be automatically created. The private key will be stored in `/usr/share/fonehome-server/.ssh/id_rsa`; this file will be securely copied to each client  (see below).
   # On each client machine, install the *fonehome* RPM, then:
     ## Edit `/etc/fonehome/fonehome.conf` to configure the server's hostname and which ports to reverse forward. Each client's reverse forwarded ports must be unique (or else they will conflict on the server side).
-    ## Securely copy `/home/fonehome/.ssh/id_rsa` from the server to `/etc/fonehome/fonehome.key` on the client. Ensure only root can read it.
+    ## *Securely* copy `/usr/share/fonehome-server/fonehome/.ssh/id_rsa` from the server to `/etc/fonehome/fonehome.key` on the client.
+    ## Ensure only root can read it: `chmod 600 /etc/fonehome/fonehome.key && chown root:root /etc/fonehome/fonehome.key`
     ## Run `fonehome -I` to confirm and accept the server's public key.
     ## Enable the *fonehome* service: `chkconfig --add fonehome`
     ## Start the *fonehome* service: `/etc/init.d/fonehome start`
-  # Run `fhshow` on the server to view active connections
-  # Run `fhssh` and `fhscp` on the server to connect back to clients
+  # On the server, add entries for each client to `/etc/fonehome-ports.conf` so you can refer to them by name
+
+== Usage ==
+
+Run the *fhshow* command on the server to view active connections.
+
+Run the *fhssh* and *fhscp* commands on the server to connect back to clients. These commands work just like `ssh(1)` and `scp(1)`, respectively, but they allow you to use the client machine names defined in `/etc/fonehome-ports.conf` instead of `localhost` plus custom port numbers.
 
 == Ports File ==
 
-On the server, the file `/etc/fonehome-ports.conf` contains a list of all client machines and which ports they are forwarding. You have to manually keep this list up to date. It's not required that you do so, but if you don't then the `fhshow(1)`, `fhssh(1)`, and `fhscp(1)` utilities will be useless.
+On the server, the file `/etc/fonehome-ports.conf` contains a list of all client machines and which ports they are forwarding. You have to manually keep this list up to date. It's not required that you do so, but if you don't then the `fhshow(1)`, `fhssh(1)`, and `fhscp(1)` utilities will be mostly useless.
 
 A sample ports file:
 {{{
@@ -57,8 +63,7 @@ A sample ports file:
 
 To connect back to a client, simply initiate a TCP connection to `localhost` and whatever port(s) you have forwarded. The most common connection type is SSH, but anything is possible (HTTP, MySQL, Nagios plugins, etc).
 
-In the case of SSH, the included server-side utilities make life easier.
-Assuming you have client `client1` reverse forwarding port `1234` back to its own SSH server (port `22`), and you've noted this in `/etc/fonehome-ports.conf`, then you can use the `fhssh(1)` and `fhscp(1)` utilities just like `ssh(1)` and `scp(1)` (respectively), except you can use the name `client1` (or whatever you put in `fonehome-ports.conf`) instead of the client's real hostname.
+In the case of SSH connections, the included server-side utilities make life easier: assuming you have client `grandma` reverse forwarding port `10100` back to its own SSH server (port `22`), and you've noted this in `/etc/fonehome-ports.conf`, then you can use the `fhssh(1)` and `fhscp(1)` utilities just like `ssh(1)` and `scp(1)` (respectively), except you can use the name `grandma` in place of the client's real hostname.
 
 == Monitoring ==
 
