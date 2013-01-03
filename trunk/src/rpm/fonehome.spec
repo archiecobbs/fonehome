@@ -15,12 +15,10 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
-%define name        fonehome
 %define username    %{name}
-%define usergroup   users
-%define pkgdir      %{_datadir}/%{name}
-%define pkgdir2     %{_datadir}/%{name}-server
-%define homedir     /home/%{username}
+%define usergroup   %{name}
+%define clientdir   %{_datadir}/%{name}
+%define serverdir   %{_datadir}/%{name}-server
 %define sshd_config %{_sysconfdir}/ssh/sshd_config
 %define scriptfile  %{_bindir}/%{name}
 %define initfile    %{_sysconfdir}/init.d/%{name}
@@ -31,7 +29,7 @@
 %define portsfile   %{_sysconfdir}/%{name}-ports.conf
 %define retrydelay  30
 
-Name:           %{name}
+Name:           fonehome
 Version:        %{fonehome_version}
 Release:        1
 Summary:        Remote access to machines behind firewalls
@@ -44,7 +42,19 @@ URL:            http://code.google.com/p/%{name}/
 Requires:       openssh
 
 %description
-%{summary}.
+fonehome allows remote access to machines behind firewalls using SSH
+port forwarding.
+
+The fonehome client is a daemon that runs on remote client machines that
+are behind some firewall that you either do not control or do not want
+to reconfigure, but which does allow normal outgoing TCP connections. The
+clients use SSH to connect to a fonehome server to which you have direct
+access. The SSH connections include reverse-forwarded TCP ports which
+in turn allow you to connect back to the remote machine.
+
+This setup is useful in situations where you have several machines
+deployed in the field and want to maintain access to them from a central
+operations server.
 
 %clean
 rm -rf %{buildroot}
@@ -63,6 +73,7 @@ subst()
       -e 's|@fonehomekey@|%{keyfile}|g' \
       -e 's|@fonehomehosts@|%{hostsfile}|g' \
       -e 's|@fonehomeretry@|%{retrydelay}|g' \
+      -e 's|@fonehomeinit@|%{initfile}|g' \
       -e 's|@fonehomescript@|%{scriptfile}|g'
 }
 subst < src/conf/fonehome.conf.sample > fonehome.conf.sample
@@ -95,59 +106,58 @@ ln %{buildroot}/%{_bindir}/fhs{sh,cp}
 
 # config files
 install -d %{buildroot}%{confdir}
-install -d %{buildroot}%{pkgdir}
-install fonehome.conf.sample %{buildroot}%{pkgdir}/
-install -d %{buildroot}%{pkgdir2}
-install fonehome-ports.conf.sample %{buildroot}%{pkgdir2}/
+install -d %{buildroot}%{clientdir}
+install fonehome.conf.sample %{buildroot}%{clientdir}/
+install fonehome.conf.sample %{buildroot}%{conffile}
+install fonehome-ports.conf.sample %{buildroot}%{portsfile}
 
 # fonehome user
-install -d %{buildroot}%{homedir}/.ssh
+install -d %{buildroot}%{serverdir}/.ssh
 
 %preun
-if [ "$1" -eq 0 ]; then
-    chkconfig --del %{name} >/dev/null
-fi
+%{stop_on_removal %{name}}
 
-%post
-
-# Install sample config file
-if ! [ -e %{conffile} ]; then
-    cp -a %{pkgdir}/fonehome.conf.sample %{conffile}
-fi
+%postun
+# No restart_on_update - don't kill the connection we are using to update this RPM with!
+%{insserv_cleanup}
 
 %files
-%attr(700,root,root) %dir %{confdir}
+%defattr(644,root,root,755)
+%dir %attr(700,root,root) %{confdir}
+%config(noreplace) %{conffile}
+%ghost %attr(644,root,root) %{hostsfile}
+%ghost %attr(600,root,root) %{keyfile}
 %attr(755,root,root) %{initfile}
 %attr(755,root,root) %{scriptfile}
 %attr(755,root,root) %{_sbindir}/rcfonehome
-%defattr(644,root,root,755)
 %{_mandir}/man1/fonehome.1*
-%{pkgdir}
+%{clientdir}
 
 %package server
 Summary:        Server for %{name} SSH connections
 Group:          System/Daemons
 Requires(pre):  pwdutils
-Requires(pre):  openssh
+Requires(post): openssh
 
 %description server
-%{summary}.
+fonehome allows remote access to machines behind firewalls using SSH
+port forwarding. This package is installed on the machine that you
+want to be the fonehome server.
 
 %pre server
 
-# Create user
-if ! grep -q '^%{username}:' /etc/passwd; then
-    useradd -p '*' -M -d '%{homedir}' -g '%{usergroup}' -c 'Fonehome User' -s /bin/true '%{username}'
+# Create user and group
+if ! getent group '%{usergroup}' >/dev/null 2>&1; then
+    groupadd -r '%{usergroup}'
 fi
-
-%preun server
-if [ "$1" -eq 0 ]; then
-    userdel '%{username}'
+if ! id '%{username}' >/dev/null 2>&1; then
+    useradd -r -p '*' -d '%{serverdir}' -g '%{usergroup}' -c 'Fonehome User' -s /bin/false '%{username}'
 fi
 
 %post server
 
-# Handy function
+# Function that patches a file using sed(1).
+# First argument is filename, subsequent arguments are passed to sed(1).
 sed_patch_file()
 {
     FILE="${1}"
@@ -167,33 +177,32 @@ sed_patch_file %{sshd_config} -r \
   -e 's/^([[:space:]]*#)?([[:space:]]*ClientAliveCountMax[[:space:]]).*$/\23/g'
 
 # Generate ssh key pair for user fonehome
-if ! [ -e %{homedir}/.ssh/id_rsa ]; then
-    ssh-keygen -t rsa -N '' -f %{homedir}/.ssh/id_rsa
-    chmod 600 %{homedir}/.ssh/id_rsa
-    chown root:root %{homedir}/.ssh/id_rsa
+if ! [ -e %{serverdir}/.ssh/id_rsa ]; then
+    ssh-keygen -t rsa -N '' -C '%{username}' -f %{serverdir}/.ssh/id_rsa
+    chmod 600 %{serverdir}/.ssh/id_rsa
+    chown root:root %{serverdir}/.ssh/id_rsa
 fi
 
 # Allow incoming ssh connections, with restrictions
 sed -r 's/^.*(ssh-rsa[[:space:]].*)$/no-X11-forwarding,no-agent-forwarding,command="sleep 365d" \1/g' \
- < %{homedir}/.ssh/id_rsa.pub > %{homedir}/.ssh/authorized_keys
+ < %{serverdir}/.ssh/id_rsa.pub > %{serverdir}/.ssh/authorized_keys
 
 # Set ownership and permissions
-chown %{username}:%{usergroup} %{homedir}/.ssh/{id_rsa.pub,authorized_keys}
-
-# Install sample ports file
-if ! [ -e %{portsfile} ]; then
-    cp -a %{pkgdir2}/fonehome-ports.conf.sample %{portsfile}
-fi
+chmod 644 %{serverdir}/.ssh/{id_rsa.pub,authorized_keys}
+chown %{username}:%{usergroup} %{serverdir}/.ssh/{id_rsa.pub,authorized_keys}
 
 %files server
 %defattr(644,root,root,755)
-%{pkgdir2}
 %{_mandir}/man1/fhssh.1*
 %{_mandir}/man1/fhscp.1*
 %{_mandir}/man1/fhshow.1*
 %attr(755,root,root) %{_bindir}/fhshow
 %attr(755,root,root) %{_bindir}/fhssh
 %attr(755,root,root) %{_bindir}/fhscp
-%attr(755,%{username},%{usergroup}) %{homedir}
-%attr(700,%{username},%{usergroup}) %{homedir}/.ssh
+%config(noreplace missingok) %{portsfile}
+%dir %attr(755,%{username},%{usergroup}) %{serverdir}
+%dir %attr(700,%{username},%{usergroup}) %{serverdir}/.ssh
+%ghost %verify(not size md5 mtime) %attr(600,root,root) %{serverdir}/.ssh/id_rsa
+%ghost %verify(not size md5 mtime) %attr(644,%{username},%{usergroup}) %{serverdir}/.ssh/id_rsa.pub
+%ghost %verify(not size md5 mtime) %attr(644,%{username},%{usergroup}) %{serverdir}/.ssh/authorized_keys
 

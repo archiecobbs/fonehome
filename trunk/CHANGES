@@ -1,4 +1,10 @@
 
+Version Next
+
+    - Move fonehome-server's homedir to /usr/share.
+    - Fix several rpmlint warnings.
+    - Fix bugs in man pages.
+
 Version 1.0.15 Released January 2, 2013
 
     - Added man pages

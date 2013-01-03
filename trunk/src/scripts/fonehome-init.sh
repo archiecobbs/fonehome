@@ -3,7 +3,7 @@
 
 ### BEGIN INIT INFO
 # Provides:             @fonehomename@
-# Required-Start:       $network $syslog
+# Required-Start:       $network $syslog $remote_fs
 # Default-Start:        3 5
 # Required-Stop:        $syslog $remote_fs
 # Default-Stop:         0 1 2 6
@@ -48,9 +48,7 @@ case "$1" in
         ;;
     restart)
         $0 stop
-        sleep 1
         $0 start
-        rc_status
         ;;
     status)
         echo -n "Checking ${NAME}: "
