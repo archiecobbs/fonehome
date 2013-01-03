@@ -1,0 +1,35 @@
+#summary Using fonehome with Nagios
+
+=== Introduction ===
+
+*fonehome* is useful in combination with [http://www.nagios.org/ Nagios]. In a typical setup, you would run the Nagios server on the *fonehome* server, and use the [http://nagiosplugins.org/man/check_by_ssh check_by_ssh] Nagios plugin to run checks on the *fonehome* client machines.
+
+This requires setting up dedicated user accounts on the *fonehome* client machine that allow SSH public key authentication so Nagios can login to the clients over the reverse forwarded SSH port. Also, the *fonehome* clients must run an `sshd(8)` daemon; however, due to the connections coming in over the tunneled port, the `sshd(8)` daemon only needs to listen on localhost, which is more secure.
+
+=== Host Checks ===
+
+A typical host check would just verify that the *fonehome* client is connected using `check_ssh`:
+{{{
+# Check grandma is alive (i.e., fonehome is connected)
+define command {
+  command_name  grandma Alive
+  command_line  $USER1$/check_ssh -p 12345 -t 90 127.0.0.1
+}
+}}}
+where `12345` is the reverse-forwarded *fonehome* port for `grandma`'s SSH server.
+
+=== Service Checks ===
+
+A typical service check would use the `check_by_ssh` plugin (long line wrapped for clarity):
+{{{
+# Check grandma's CPU Load
+define command {
+  command_name  grandma CPU Load
+  command_line  $USER1$/check_by_ssh -t 90 -H 127.0.0.1 -p 12345
+                  -i /etc/grandma-nagios-ssh.key -l nagios-user
+                  -oLogLevel=ERROR -oStrictHostKeyChecking=no -oBatchMode=yes
+                  -oCheckHostIP=no -oUserKnownHostsFile=/dev/null 
+                  -C "$USER1$/check_load -r -w 2.0,1.5,1.0 -c 4.0,3.0,2.0"
+}
+}}}
+Note the use of `/etc/grandma-nagios-ssh.key` as the SSH private key for user `nagios-user`, as well as some other options to keep `ssh(1)` from spitting out warnings that would confuse Nagios.
