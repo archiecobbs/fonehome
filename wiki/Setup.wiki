@@ -38,14 +38,19 @@ A sample ports file:
 # Note: the first entry for a given machine should be the SSH server port (if any).
 #
 
-# server1 is reverse forwarding these two ports
-1200   server1   SSH server
-1201   server1   MySQL server
+# frank is reverse forwarding these three ports
+10010   frank     Frank's Hot Dog Stand: SSH Server
+10011   frank     Frank's Hot Dog Stand: MySQL Server
+10012   frank     Frank's Hot Dog Stand: Apache Server
 
-# server2 is reverse forwarding these three ports
-1210   server2   SSH server
-1211   server2   MySQL server
-1213   server2   HTTP server
+# bob is reverse forwarding only the ssh ports
+10000   bob       Bob's Restaurant: SSH Server
+
+# grandma's house
+10100   grandma   Grandma's House: SSH Server
+
+# dolly's house
+10200   dolly     Dolly's House: SSH Server
 }}}
 
 == Connecting Back ==
@@ -59,6 +64,19 @@ Assuming you have client `client1` reverse forwarding port `1234` back to its ow
 
 On the server, the `fhshow(1)` will show all current *fonehome* connections and where they are coming from.
 
+Sample output:
+
+{{{
+$ fhshow
+Fonehome SSHD 13847 from 12.34.56.78:34567:
+    Port 10010:  frank: Frank's Hot Dog Stand: SSH Server
+    Port 10011:  frank: Frank's Hot Dog Stand: MySQL Server
+    Port 10012:  frank: Frank's Hot Dog Stand: Apache Server
+Fonehome SSHD 23472 from 23.45.67.89:12345:
+    Port 10000:  bob: Bob's Restaurant: SSH Server
+Fonehome SSHD 24998 from 34.56.78.90:23456:
+    Port 10100:  grandma: Grandma's House: SSH Server
+}}}
 == Security ==
 
-Keeping the server's private SSH key secret is obviously very important. But in any case, the SSH connections from the clients are not allowed to execute any commands on the server, so (in theory) the worst that can happen if the private key is lost is a denial of service attack.
+Keeping the server's private SSH key secret is obviously very important. But in any case, the SSH connections from the clients are not allowed to execute any commands on the server, so (in theory) the worst that can happen if the private key is disclosed is a denial of service attack.
