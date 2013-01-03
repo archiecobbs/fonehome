@@ -25,6 +25,29 @@ The *fonehome* daemon is designed to be robust, automatically reconnecting to th
 
 On the server, the file `/etc/fonehome-ports.conf` contains a list of all client machines and which ports they are forwarding. You have to manually keep this list up to date. It's not required that you do so, but if you don't then the `fhshow(1)`, `fhssh(1)`, and `fhscp(1)` utilities will be useless.
 
+A sample ports file:
+{{{
+#
+# This file contains a mapping from reverse-forwarded TCP port to originating client machine.
+# This file is used by the fhshow, fhssh, and fhscp utilities.
+#
+# Format:
+#
+#   PORT  MACHINE-NAME   [ DESCRIPTION OF WHAT PORT CONNECTS TO ON THE CLIENT ]
+#
+# Note: the first entry for a given machine should be the SSH server port (if any).
+#
+
+# server1 is reverse forwarding these two ports
+1200   server1   SSH server
+1201   server1   MySQL server
+
+# server2 is reverse forwarding these three ports
+1210   server2   SSH server
+1211   server2   MySQL server
+1213   server2   HTTP server
+}}}
+
 == Connecting Back ==
 
 To connect back to a client, simply initiate a TCP connection to `localhost` and whatever port(s) you have forwarded. The most common connection type is SSH, but anything is possible (HTTP, MySQL, Nagios plugins, etc).
