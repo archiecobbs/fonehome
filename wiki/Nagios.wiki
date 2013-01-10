@@ -27,9 +27,13 @@ define command {
   command_name  grandma CPU Load
   command_line  $USER1$/check_by_ssh -t 90 -H 127.0.0.1 -p 12345
                   -i /etc/grandma-nagios-ssh.key -l nagios-user
-                  -oLogLevel=ERROR -oStrictHostKeyChecking=no -oBatchMode=yes
-                  -oCheckHostIP=no -oUserKnownHostsFile=/dev/null 
+                  -oLogLevel=ERROR -oBatchMode=yes
+                  -oStrictHostKeyChecking=no -oCheckHostIP=no
+                  -oUserKnownHostsFile=/dev/null -oConnectTimeout=85
                   -C "$USER1$/check_load -r -w 2.0,1.5,1.0 -c 4.0,3.0,2.0"
 }
 }}}
-Note the use of `/etc/grandma-nagios-ssh.key` as the SSH private key for user `nagios-user`, as well as some other options to keep `ssh(1)` from spitting out warnings that would confuse Nagios.
+Notes:
+  * The file `/etc/grandma-nagios-ssh.key` contains the (unencrypted) SSH private key for the user `nagios-user` on the client machine
+  * The `LogLevel`, `StrictHostKeyChecking`, and `CheckHostIP` options keep SSH from spitting out warnings that would confuse Nagios.
+  * The `ConnectTimeout` option is set slightly lower than the `-t 90` plugin timeout. This gives a result of `UNKNOWN` instead of `CRITICAL` if we can't connect to the client.
