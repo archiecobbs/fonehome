@@ -99,6 +99,12 @@ ln -s %{initfile} %{buildroot}%{_sbindir}/rcfonehome
 install -d %{buildroot}%{_mandir}/man1
 install *.1 %{buildroot}%{_mandir}/man1/
 
+# docs
+install -d %{buildroot}%{_datadir}/doc/packages/%{name}
+install -d %{buildroot}%{_datadir}/doc/packages/%{name}-server
+install CHANGES README COPYING %{buildroot}%{_datadir}/doc/packages/%{name}/
+install CHANGES README COPYING %{buildroot}%{_datadir}/doc/packages/%{name}-server/
+
 # script files
 install -d %{buildroot}%{_bindir}
 install fonehome fhs{sh,how} %{buildroot}/%{_bindir}/
@@ -113,6 +119,13 @@ install fonehome-ports.conf.sample %{buildroot}%{portsfile}
 
 # fonehome user
 install -d %{buildroot}%{serverdir}/.ssh
+
+# Create ghost files
+install /dev/null %{buildroot}%{hostsfile}
+install /dev/null %{buildroot}%{keyfile}
+install /dev/null %{buildroot}%{serverdir}/.ssh/id_rsa
+install /dev/null %{buildroot}%{serverdir}/.ssh/id_rsa.pub
+install /dev/null %{buildroot}%{serverdir}/.ssh/authorized_keys
 
 %preun
 %{stop_on_removal %{name}}
@@ -130,6 +143,7 @@ install -d %{buildroot}%{serverdir}/.ssh
 %attr(755,root,root) %{initfile}
 %attr(755,root,root) %{scriptfile}
 %attr(755,root,root) %{_sbindir}/rcfonehome
+%doc %{_datadir}/doc/packages/%{name}
 %{_mandir}/man1/fonehome.1*
 %{clientdir}
 
@@ -196,6 +210,7 @@ chown %{username}:%{usergroup} %{serverdir}/.ssh/{id_rsa.pub,authorized_keys}
 %{_mandir}/man1/fhssh.1*
 %{_mandir}/man1/fhscp.1*
 %{_mandir}/man1/fhshow.1*
+%doc %{_datadir}/doc/packages/%{name}-server
 %attr(755,root,root) %{_bindir}/fhshow
 %attr(755,root,root) %{_bindir}/fhssh
 %attr(755,root,root) %{_bindir}/fhscp
