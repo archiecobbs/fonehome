@@ -1,4 +1,10 @@
 
+Version Next
+
+    - Move home directory to /var/lib/fonehome-sever
+    - Tighen security with no-pty and permitopen="0.0.0.0:9"
+    - Remove sshd_config mods from %post script
+
 Version 1.0.21 Released January 3, 2013
 
     - Move fonehome-server's homedir to /usr/share.

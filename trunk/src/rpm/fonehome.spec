@@ -15,19 +15,27 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
-%define username    %{name}
-%define usergroup   %{name}
+# client side
 %define clientdir   %{_datadir}/%{name}
-%define serverdir   %{_datadir}/%{name}-server
-%define sshd_config %{_sysconfdir}/ssh/sshd_config
 %define scriptfile  %{_bindir}/%{name}
 %define initfile    %{_sysconfdir}/init.d/%{name}
 %define confdir     %{_sysconfdir}/%{name}
 %define conffile    %{confdir}/%{name}.conf
 %define keyfile     %{confdir}/%{name}.key
 %define hostsfile   %{confdir}/%{name}.hosts
-%define portsfile   %{_sysconfdir}/%{name}-ports.conf
 %define retrydelay  30
+
+# server side
+%define username    %{name}
+%define usergroup   %{name}
+%define serverdir   %{_var}/lib/%{name}-server
+%define portsfile   %{_sysconfdir}/%{name}-ports.conf
+%define servprikey  %{serverdir}/.ssh/id_rsa
+%define servpubkey  %{servprikey}.pub
+%define authkeys    %{serverdir}/.ssh/authorized_keys
+
+%define authkeys_comment    restrict what %{username} user can do
+%define authkeys_options    no-X11-forwarding,no-agent-forwarding,no-pty,permitopen="0.0.0.0:9",command="sleep 99999d"
 
 Name:           fonehome
 Version:        %{fonehome_version}
@@ -123,9 +131,9 @@ install -d %{buildroot}%{serverdir}/.ssh
 # Create ghost files
 install /dev/null %{buildroot}%{hostsfile}
 install /dev/null %{buildroot}%{keyfile}
-install /dev/null %{buildroot}%{serverdir}/.ssh/id_rsa
-install /dev/null %{buildroot}%{serverdir}/.ssh/id_rsa.pub
-install /dev/null %{buildroot}%{serverdir}/.ssh/authorized_keys
+install /dev/null %{buildroot}%{servprikey}
+install /dev/null %{buildroot}%{servpubkey}
+install /dev/null %{buildroot}%{authkeys}
 
 %preun
 %{stop_on_removal %{name}}
@@ -170,40 +178,24 @@ fi
 
 %post server
 
-# Function that patches a file using sed(1).
-# First argument is filename, subsequent arguments are passed to sed(1).
-sed_patch_file()
-{
-    FILE="${1}"
-    shift
-    sed ${1+"$@"} < "${FILE}" > "${FILE}".new
-    if ! diff -q "${FILE}" "${FILE}".new >/dev/null; then
-        [ -e "${FILE}".old ] || cp -a "${FILE}"{,.old}
-        cat "${FILE}".new > "${FILE}"
-    fi
-    rm -f "${FILE}".new
-}
-
-# Tweak SSHD config so it quickly detects a disconnected client (hopefully before the client does)
-sed_patch_file %{sshd_config} -r \
-  -e 's/^([[:space:]]*#)?([[:space:]]*TCPKeepAlive[[:space:]]).*$/\2yes/g' \
-  -e 's/^([[:space:]]*#)?([[:space:]]*ClientAliveInterval[[:space:]]).*$/\220/g' \
-  -e 's/^([[:space:]]*#)?([[:space:]]*ClientAliveCountMax[[:space:]]).*$/\23/g'
-
 # Generate ssh key pair for user fonehome
-if ! [ -e %{serverdir}/.ssh/id_rsa ]; then
-    ssh-keygen -t rsa -N '' -C '%{username}' -f %{serverdir}/.ssh/id_rsa
-    chmod 600 %{serverdir}/.ssh/id_rsa
-    chown root:root %{serverdir}/.ssh/id_rsa
+if ! [ -e %{servprikey} ]; then
+
+    # Generate key
+    echo "creating SSH public key pair for user '%{username}'"
+    rm -f %{servpubkey}
+    ssh-keygen -t rsa -N '' -C '%{username}' -f %{servprikey}
+    chmod 600 %{servprikey}
+    chmod 644 %{servpubkey}
+    chown root:root %{servprikey}
+    chown %{username}:%{usergroup} %{servpubkey}
+
+    # Allow incoming ssh connections using key, but with lots of restrictions
+    sed -r 's/^((ssh|ecdsa)-[^[:space:]]+[[:space:]].*)$/# %{authkeys_comment}\n%{authkeys_options} \1/g' \
+      < %{servpubkey}> %{authkeys}
+    chmod 644 %{authkeys}
+    chown %{username}:%{usergroup} %{authkeys}
 fi
-
-# Allow incoming ssh connections, with restrictions
-sed -r 's/^.*(ssh-rsa[[:space:]].*)$/no-X11-forwarding,no-agent-forwarding,command="sleep 365d" \1/g' \
- < %{serverdir}/.ssh/id_rsa.pub > %{serverdir}/.ssh/authorized_keys
-
-# Set ownership and permissions
-chmod 644 %{serverdir}/.ssh/{id_rsa.pub,authorized_keys}
-chown %{username}:%{usergroup} %{serverdir}/.ssh/{id_rsa.pub,authorized_keys}
 
 %files server
 %defattr(644,root,root,755)
@@ -217,7 +209,7 @@ chown %{username}:%{usergroup} %{serverdir}/.ssh/{id_rsa.pub,authorized_keys}
 %config(noreplace missingok) %{portsfile}
 %dir %attr(755,%{username},%{usergroup}) %{serverdir}
 %dir %attr(700,%{username},%{usergroup}) %{serverdir}/.ssh
-%ghost %verify(not size md5 mtime) %attr(600,root,root) %{serverdir}/.ssh/id_rsa
-%ghost %verify(not size md5 mtime) %attr(644,%{username},%{usergroup}) %{serverdir}/.ssh/id_rsa.pub
-%ghost %verify(not size md5 mtime) %attr(644,%{username},%{usergroup}) %{serverdir}/.ssh/authorized_keys
+%ghost %verify(not size md5 mtime) %attr(600,root,root) %{servprikey}
+%ghost %verify(not size md5 mtime) %attr(644,%{username},%{usergroup}) %{servpubkey}
+%ghost %verify(not size md5 mtime) %attr(644,%{username},%{usergroup}) %{authkeys}
 
