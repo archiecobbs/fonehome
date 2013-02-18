@@ -1,5 +1,5 @@
 
-Version Next
+Version 1.0.28 Released February 18, 2013
 
     - Move home directory to /var/lib/fonehome-sever
     - Tighen security with no-pty and permitopen="0.0.0.0:9"
