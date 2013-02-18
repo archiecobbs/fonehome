@@ -81,8 +81,5 @@ fi
 exec "${NAME:2}" ${ADD_ARGS} \
   -oPort="${PORT}" \
   -oProtocol=2 \
-  -oUserKnownHostsFile=/dev/null \
-  -oGlobalKnownHostsFile=/dev/null \
-  -oNoHostAuthenticationForLocalhost=yes \
   "${PARAMETERS[@]}"
 
