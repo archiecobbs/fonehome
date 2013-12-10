@@ -22,21 +22,28 @@ is a wrapper for the
 program.
 It creates a persistent no-pty
 .Xr ssh 1
-connection to a fonehome server.
-Normal and reverse port forwarding is setup according to the configuration in
+connection to one or more fonehome servers, with normal and reverse port forwarding
+setup according to the configuration in
 .Pa @fonehomeconf@ .
+This allows private, bi-directional connections between the fonehome client and server,
+while keeping those connections fully secured, without requiring any firewall setup.
+.Pp
+.Nm
+is useful in situations where you have several machines
+deployed in the field and want to maintain secure access to them from a central
+operations server without any firewall hassles.
 .Pp
 Normally
 .Nm
 is run as a daemon from
 .Pa @fonehomeinit@ .
 However, upon first installation (or whenever a server's host key changes),
-an initialization step must be performed by running
+a manual initialization step must be performed by running
 .Nm
 manually with the
 .Fl I
 flag.
-This step allows the administrator to confirm and accept the server's host key.
+This allows the administrator to confirm and accept the server host key(s).
 .Sh OPTIONS
 .Bl -tag -width Ds
 .It Fl f Ar config-file
@@ -45,14 +52,80 @@ Use and alternate configuration file other than the default
 .It Fl I
 Perform first-time initialization when connecting to a new server.
 .El
+.Sh CONFIGURATION
+The configuration file is a
+.Xr bash 1
+source file that defines the following shell variables:
+.Bl -tag -width Ds
+.It Pa SERVER
+Defines the host to connect to.
+This is the only variable that is strictly required.
+.It Pa SSH_FLAGS
+.Xr ssh 1
+command line flags to use with the connection.
+Typically this will contain reverse-forwarded ports to allow connections back from
+the server to the client.
+.It Pa USERNAME
+SSH username.
+Default is
+.Ar @fonehomeuser@ .
+.It Pa KEY_FILE
+File containing the SSH private key.
+This file must be unencrypted to allow for unattended operation; however,
+it should be readable only by root.
+Default is
+.Ar @fonehomekey@ .
+.It Pa RETRY_DELAY
+How long (in seconds) to pause between connection attempts.
+Default is
+.Ar @fonehomeretry@
+seconds.
+.It Pa SYSLOG_TAG
+Identifier to use when logging to
+.Xr syslog 3 .
+Default is
+.Ar @fonehomename@ .
+.It Pa SYSLOG_FACILITY
+Facility to use when logging to
+.Xr syslog 3 .
+Default is
+.Ar @fonehomelogfac@ .
+.It Pa KNOWN_HOSTS_FILE
+SSH known hosts file used to store recognized server public keys.
+Default is
+.Ar @fonehomehosts@ .
+.El
+.Sh MULTIPLE SERVERS
+.Nm
+suports connecting to multiple servers.
+To enable multi-server support, simply declare
+.Pa SERVER
+as a
+.Xr bash 1
+array variable.
+Then a separate connection will be maintained to each server in the array.
+.Pp
+When multiple servers are configured, the
+.Pa USERNAME ,
+.Pa SSH_FLAGS ,
+.Pa KEY_FILE ,
+and
+.Pa RETRY_DELAY
+variables may also be declared as arrays, in which case the corresponding
+array elements will be used for each server.
+If these variables are not arrays, or are shorter than the
+.Pa SERVER
+array, the last value will be used repeatedly.
+Therefore, setting a simple (non-array) value results in that value being used for all servers.
 .Sh FILES
 .Bl -tag -width Ds -compact
 .It Pa @fonehomeconf@
 Default configuration file.
 .It Pa @fonehomekey@
-Private SSH key file used to authenticate to the server.
+Default private SSH key file used to authenticate to the server.
 .It Pa @fonehomehosts@
-SSH known hosts file used to store and verify the server's public key.
+Default SSH known hosts file used to store and verify the server's public key.
+.El
 .Sh SEE ALSO
 .Xr ssh 1 .
 .Rs

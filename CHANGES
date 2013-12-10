@@ -1,3 +1,7 @@
+Version Next
+
+    - Add support for connecting to multiple servers (issue #1)
+    - Log connection attempts and status to syslog (issue #2)
 
 Version 1.0.28 Released February 18, 2013
 

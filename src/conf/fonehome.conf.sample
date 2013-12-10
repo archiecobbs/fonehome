@@ -1,20 +1,45 @@
 # $Id$
 
 #
-# This is a configuration file for the fonehome client.
+# This is a configuration file for the fonehome client and will be sourced as bash(1) input.
 # See http://code.google.com/p/fonehome/ for details.
 #
 
-# Configure the server to connect to (REQUIRED).
+# Configure the server(s) to connect to (REQUIRED).
+#
+# Note: SERVER may be optionally declared as bash(1) array variables to connect to multiple servers.
+#
+# If so, then USERNAME, KEY_FILE, SSH_FLAGS, and RETRY_DELAY are also treated as arrays, and the i'th
+# element in those arrays is used with the i'th element in $SERVER array. If any of these other array
+# variables are shorter than $SERVER, then the last element in the array is used repeatedly, and if
+# any of these other variables are not bash arrays, they are converted into an array of length one.
+# Therefore, setting a simple non-array value results in that value being used for all servers.
+#
+# For example, here are three servers with three different usernames but sharing the same private key:
+#
+#   SERVER=(serv1.example.com serv2.example.com serv3.example.com)
+#   USERNAME=(user1 user2 user3)
+#   KEY_FILE='@fonehomekey@'
+#
 #SERVER='myhost.example.com'
 
 # Configure SSH command line flags. This minimal example allows reverse SSH connections via port 1234 on the server.
 # Consider also: -oCompression=yes, -oCheckHostIP=yes, -oLogLevel=.... See man ssh_config(5) for a complete list.
 SSH_FLAGS='-R1234:localhost:22'
 
-# Other stuff you can configure (with defaults shown)
+# SSH connection username
 USERNAME='@fonehomeuser@'
+
+# SSH connection private key file (should be unencrypted and readable only by root)
 KEY_FILE='@fonehomekey@'
+
+# How long to pause after a failed connection attempt or a disconnection
 RETRY_DELAY='@fonehomeretry@'
-KNOWN_HOSTS_FILE="@fonehomehosts@"
+
+# How should fonehome log to syslog(3)
+SYSLOG_TAG='@fonehomename@'
+SYSLOG_FACILITY='@fonehomelogfac@'
+
+# SSH known hosts file. You must run `fonehome -I' once to initialize this file.
+KNOWN_HOSTS_FILE='@fonehomehosts@'
 
