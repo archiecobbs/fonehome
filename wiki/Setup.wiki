@@ -3,11 +3,13 @@
 
 == Introduction ==
 
-*fonehome* is designed to work with a single server and several clients. The clients use SSH to connect to the server. Each client connection opens one or more reverse SSH tunnels back to itself over the original client-to-server connection. This allows any process local to the server to connect back to services on the client (such as the client's own SSH server) simply by connecting to a local port on the server.
+*fonehome* normally is deployed with a single server and several clients. The clients use SSH to connect to the server. Each client connection opens one or more reverse SSH tunnels back to itself over the original client-to-server connection. This allows any process local to the server to connect back to services on the client (such as the client's own SSH server) simply by connecting to a local port on the server.
 
 The key advantage of this setup is that it works even if the client is behind a firewall that only allows outgoing TCP connections (such as a NAT device). In addition, the client's SSH server can be configured to only listen on the loopback interface, increasing its security. This also makes the server a single choke point for access to all of the clients, which makes controlling that access among multiple users easier.
 
 The *fonehome* daemon is designed to be robust, automatically reconnecting to the server if the connection dies, or if it is unable to open the reverse forwarded ports on the server. SSH keep-alive packets are used to keep the connection alive and quickly detect failure at the other end.
+
+Each *fonehome* client can also be configured to connect to multiple servers, e.g., for redudancy.
 
 == Installation ==
 
@@ -16,9 +18,9 @@ The *fonehome* daemon is designed to be robust, automatically reconnecting to th
     ## Edit `/etc/fonehome/fonehome.conf` to configure the server's hostname and which ports to reverse forward. Each client's reverse forwarded ports must be unique (or else they will conflict on the server side).
     ## *Securely* copy `/usr/share/fonehome-server/fonehome/.ssh/id_rsa` from the server to `/etc/fonehome/fonehome.key` on the client.
     ## Ensure only root can read it: `chmod 600 /etc/fonehome/fonehome.key && chown root:root /etc/fonehome/fonehome.key`
-    ## Run `fonehome -I` to confirm and accept the server's public key.
-    ## Enable the *fonehome* service: `chkconfig --add fonehome`
-    ## Start the *fonehome* service: `/etc/init.d/fonehome start`
+    ## Run `fonehome -I` on the client to confirm and accept the server's public key.
+    ## Enable the *fonehome* service: `chkconfig --add fonehome` (or `systemctl enable fonehome.service`)
+    ## Start the *fonehome* service: `/etc/init.d/fonehome start` (or `systemctl start fonehome.service`)
   # On the server, add entries for each client to `/etc/fonehome-ports.conf` so you can refer to them by name
 
 == Usage ==
