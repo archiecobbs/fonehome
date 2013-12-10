@@ -1,6 +1,7 @@
 #
 # spec file for package fonehome
 #
+# Copyright (c) 2013 SUSE LINUX Products GmbH, Nuernberg, Germany.
 # Copyright (c) 2012 Archie L. Cobbs <archie@dellroad.org>
 #
 # All modifications and additions to the file contributed by third parties
@@ -11,9 +12,10 @@
 # case the license is the MIT License). An "Open Source License" is a
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
-#
+
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
+
 
 # client side
 %define clientdir   %{_datadir}/%{name}
@@ -24,6 +26,7 @@
 %define keyfile     %{confdir}/%{name}.key
 %define hostsfile   %{confdir}/%{name}.hosts
 %define retrydelay  30
+%define syslogfac   daemon
 
 # server side
 %define username    %{name}
@@ -39,15 +42,17 @@
 
 Name:           fonehome
 Version:        %{fonehome_version}
-Release:        1
+Release:        0
 Summary:        Remote access to machines behind firewalls
-Group:          System/Daemons
 License:        Apache-2.0
-BuildRoot:      %{_tmppath}/%{name}-root
-Buildarch:      noarch
+Group:          System/Daemons
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+BuildArch:      noarch
 Source:         %{name}-%{version}.tar.gz
-URL:            http://code.google.com/p/%{name}/
+Url:            http://code.google.com/p/%{name}/
+Requires:       findutils
 Requires:       openssh
+Requires:       sed
 
 %description
 fonehome allows remote access to machines behind firewalls using SSH
@@ -64,9 +69,6 @@ This setup is useful in situations where you have several machines
 deployed in the field and want to maintain access to them from a central
 operations server.
 
-%clean
-rm -rf %{buildroot}
-
 %prep
 %setup
 
@@ -82,7 +84,8 @@ subst()
       -e 's|@fonehomehosts@|%{hostsfile}|g' \
       -e 's|@fonehomeretry@|%{retrydelay}|g' \
       -e 's|@fonehomeinit@|%{initfile}|g' \
-      -e 's|@fonehomescript@|%{scriptfile}|g'
+      -e 's|@fonehomescript@|%{scriptfile}|g' \
+      -e 's|@fonehomelogfac@|%{syslogfac}|g'
 }
 subst < src/conf/fonehome.conf.sample > fonehome.conf.sample
 subst < src/conf/fonehome-ports.conf.sample > fonehome-ports.conf.sample
@@ -213,3 +216,4 @@ fi
 %ghost %verify(not size md5 mtime) %attr(644,%{username},%{usergroup}) %{servpubkey}
 %ghost %verify(not size md5 mtime) %attr(644,%{username},%{usergroup}) %{authkeys}
 
+%changelog
