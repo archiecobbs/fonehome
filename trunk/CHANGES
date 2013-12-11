@@ -6,7 +6,7 @@ Version 1.0.31 Released December 10, 2013
 Version 1.0.28 Released February 18, 2013
 
     - Move home directory to /var/lib/fonehome-sever
-    - Tighen security with no-pty and permitopen="0.0.0.0:9"
+    - Tighten security with no-pty and permitopen="0.0.0.0:9"
     - Remove sshd_config mods from %post script
     - Remove these flags no longer needed with newer SSH:
         -oUserKnownHostsFile=/dev/null
