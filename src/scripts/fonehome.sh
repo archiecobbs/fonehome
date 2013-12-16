@@ -101,13 +101,13 @@ fi
 . "${CONFIG_FILE}"
 
 # Verify required fields are set
-if ! [[ -v SERVER ]]; then
+if [[ -z SERVER ]]; then
     errout "no server(s) configured"
 fi
-if ! [[ -v USERNAME ]]; then
+if [[ -z USERNAME ]]; then
     errout "no username(s) configured"
 fi
-if ! [[ -v KEY_FILE ]]; then
+if [[ -z KEY_FILE ]]; then
     errout "no key file(s) configured"
 fi
 
