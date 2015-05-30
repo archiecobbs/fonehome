@@ -7,8 +7,6 @@ Otherwise, use "ant" to build them yourself using rpmbuild(1).
 
 Please see
 
-    http://code.google.com/p/fonehome
+    https://github.com/archiecobbs/fonehome/
 
 for more information.
-
-$Id$

@@ -1,5 +1,3 @@
-# $Id$
-
 #
 # This file contains a mapping from reverse-forwarded TCP port to originating client machine.
 # This file is used by the fhshow, fhssh, and fhscp utilities.

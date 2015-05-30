@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 
 # Set constants and defaults
 NAME='@fonehomename@'

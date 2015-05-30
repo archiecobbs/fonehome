@@ -43,8 +43,6 @@ Instructions:
         fhssh  - ssh(1) to your clients by name (in /etc/fonehome-ports.conf)
         fhscp  - scp(1) to your clients by name (in /etc/fonehome-ports.conf)
 
-Home page: http://fonehome.googlecode.com/
+Home page: https://github.com/archiecobbs/fonehome/
 
 See COPYING for license. See CHANGES for change history.
-
-$Id$

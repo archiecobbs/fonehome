@@ -49,7 +49,7 @@ Group:          System/Daemons
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
 Source:         %{name}-%{version}.tar.gz
-Url:            http://code.google.com/p/%{name}/
+Url:            https://github.com/archiecobbs/%{name}/
 Requires:       findutils
 Requires:       openssh
 Requires:       sed

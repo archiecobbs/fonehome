@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id$
 
 ### BEGIN INIT INFO
 # Provides:             @fonehomename@

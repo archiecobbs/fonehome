@@ -1,8 +1,6 @@
-# $Id$
-
 #
 # This is a configuration file for the fonehome client and will be sourced as bash(1) input.
-# See http://code.google.com/p/fonehome/ for details.
+# See https://github.com/archiecobbs/fonehome/ for details.
 #
 
 # Configure the server(s) to connect to (REQUIRED).
