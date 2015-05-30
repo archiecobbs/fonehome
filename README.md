@@ -6,4 +6,4 @@ This setup is useful in situations where you have several machines deployed in t
 
 **fonehome** also supports connecting to multiple servers at the same time, each with different forwarded ports, etc.
 
-[Read more about it](Setup).
+[Read more about it](https://github.com/archiecobbs/fonehome/wiki/Setup).
