@@ -5,9 +5,14 @@
     <!-- Import ant macros -->
     <import file="src/build/macros.xml"/>
 
+    <!-- Determine version -->
+    <dellroad:gitrevision property="fonehome.version"/>
+    <echo message=""/>
+    <echo message="Version is ${fonehome.version}"/>
+    <echo message=""/>
+
     <!-- Properties -->
     <dellroad:svnrevision/>
-    <property name="fonehome.version" value="1.0.${svn.revision}"/>
     <property name="tarball.name" value="${ant.project.name}-${fonehome.version}"/>
     <property name="tarball.file" value="${tarball.name}.tar.gz"/>
 
