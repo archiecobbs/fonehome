@@ -41,14 +41,14 @@
 %define authkeys_options    no-X11-forwarding,no-agent-forwarding,no-pty,permitopen="0.0.0.0:9",command="sleep 99999d"
 
 Name:           fonehome
-Version:        %{fonehome_version}
+Version:        %(echo %{fonehome_version} | tr - .)
 Release:        0
 Summary:        Remote access to machines behind firewalls
 License:        Apache-2.0
 Group:          System/Daemons
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildArch:      noarch
-Source:         %{name}-%{version}.tar.gz
+Source:         %{name}-%{fonehome_version}.tar.gz
 Url:            https://github.com/archiecobbs/%{name}/
 Requires:       findutils
 Requires:       openssh
@@ -70,7 +70,7 @@ deployed in the field and want to maintain access to them from a central
 operations server.
 
 %prep
-%setup
+%setup -n %{name}-%{fonehome_version}
 
 %build
 subst()
