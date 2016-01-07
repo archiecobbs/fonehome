@@ -1,3 +1,7 @@
+Version Next
+
+    - Improvements to fhshow(1); support IPv6 and UDP sockets
+
 Version 1.0.31 Released December 10, 2013
 
     - Add support for connecting to multiple servers (issue #1)

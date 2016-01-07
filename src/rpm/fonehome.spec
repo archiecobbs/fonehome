@@ -53,6 +53,7 @@ Url:            https://github.com/archiecobbs/%{name}/
 Requires:       findutils
 Requires:       openssh
 Requires:       sed
+Requires:       bc
 
 %description
 fonehome allows remote access to machines behind firewalls using SSH
