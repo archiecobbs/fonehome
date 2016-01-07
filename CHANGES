@@ -1,4 +1,4 @@
-Version Next
+Version 1.1.0 Released January 7, 2016
 
     - Improvements to fhshow(1); support IPv6 and UDP sockets
 
