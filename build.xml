@@ -1,12 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="fonehome" default="build" basedir="." xmlns:dellroad="urn:org.dellroad.ant">
+<project name="fonehome"
+  default="build"
+  basedir="."
+  xmlns:antcontrib="urn:net.sf.antcontrib"
+  xmlns:dellroad="urn:org.dellroad.ant">
 
     <!-- Import ant macros -->
     <import file="src/build/macros.xml"/>
 
     <!-- Determine version -->
-    <dellroad:gitrevision property="fonehome.version"/>
+    <antcontrib:if>
+        <available file="version.properties" type="file"/>
+        <antcontrib:then>
+            <property file="version.properties"/>
+        </antcontrib:then>
+        <antcontrib:else>
+            <dellroad:gitrevision property="fonehome.version"/>
+        </antcontrib:else>
+    </antcontrib:if>
     <echo message=""/>
     <echo message="Version is ${fonehome.version}"/>
     <echo message=""/>
@@ -19,14 +31,16 @@
     <target name="tarball">
         <delete dir="build/${tarball.name}"/>
         <mkdir dir="build/${tarball.name}"/>
+        <echo file="build/${tarball.name}/version.properties" message="fonehome.version=${fonehome.version}"/>
         <copy todir="build/${tarball.name}">
             <fileset dir=".">
-                <include name="*"/>
-                <include name="src/build/**/*"/>
-                <include name="src/conf/**/*"/>
-                <include name="src/init.d/**/*"/>
-                <include name="src/scripts/**/*"/>
-                <include name="src/man/**/*"/>
+                <include name="CHANGES"/>
+                <include name="INSTALL"/>
+                <include name="COPYING"/>
+                <include name="README"/>
+                <include name="README.md"/>
+                <include name="build.xml"/>
+                <include name="src/**/*"/>
             </fileset>
         </copy>
         <tar compression="gzip" basedir="build" includes="${tarball.name}/**/*" destfile="build/${tarball.file}"/>
