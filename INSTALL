@@ -1,7 +1,7 @@
 
 Pre-build RPMs are available here:
 
-    http://download.opensuse.org/repositories/home:/archie172/
+    https://build.opensuse.org/package/show/network:utilities/fonehome
 
 Otherwise, use "ant" to build them yourself using rpmbuild(1).
 
