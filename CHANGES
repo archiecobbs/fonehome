@@ -1,3 +1,7 @@
+Version Next
+
+    - Filter zero bytes from /proc/X/cmdline to avoid bash warning
+
 Version 1.1.0 Released January 7, 2016
 
     - Improvements to fhshow(1); support IPv6 and UDP sockets

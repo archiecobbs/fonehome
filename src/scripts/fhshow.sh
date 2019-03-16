@@ -76,7 +76,7 @@ grep -vE '^[[:space:]]*(#.*|)$' "${PORTSFILE}" | while read PORT CLIENT DESCRIPT
         warn multiple processes listening on port ${PORT} \(${CHILD_ID}\)
         continue
     fi
-    PROCESS="${CHILD_ID} `cat /proc/"${CHILD_ID}"/cmdline`"
+    PROCESS="${CHILD_ID} `cat /proc/"${CHILD_ID}"/cmdline | tr -d '\000'`"
 
     # Find parent process
     PARENT_ID=`sed -rn "s|^${WORD}${SPACE}\([^)]*\)${SPACE}${WORD}${SPACE}(${WORD}).*$|\1|gp" /proc/${CHILD_ID}/stat`
