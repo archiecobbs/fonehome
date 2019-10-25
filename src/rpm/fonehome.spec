@@ -164,6 +164,8 @@ Summary:        Server for %{name} SSH connections
 Group:          System/Daemons
 Requires(pre):  pwdutils
 Requires(post): openssh
+Requires(post): sed
+Requires(post): util-linux
 
 %description server
 fonehome allows remote access to machines behind firewalls using SSH
@@ -185,20 +187,17 @@ fi
 # Generate ssh key pair for user fonehome
 if ! [ -e %{servprikey} ]; then
 
+    # Run commands below with reduced privileges to avoid security race conditions
+    RUN_FONEHOME='runuser -u %{username} -g %{usergroup} --'
+
     # Generate key
     echo "creating SSH public key pair for user '%{username}'"
-    rm -f %{servpubkey}
-    ssh-keygen -t rsa -N '' -C '%{username}' -f %{servprikey}
-    chmod 600 %{servprikey}
-    chmod 644 %{servpubkey}
-    chown root:root %{servprikey}
-    chown %{username}:%{usergroup} %{servpubkey}
+    ${RUN_FONEHOME} ssh-keygen -t rsa -N '' -C %{username} -f %{servprikey}
 
     # Allow incoming ssh connections using key, but with lots of restrictions
-    sed -r 's/^((ssh|ecdsa)-[^[:space:]]+[[:space:]].*)$/# %{authkeys_comment}\n%{authkeys_options} \1/g' \
-      < %{servpubkey}> %{authkeys}
-    chmod 644 %{authkeys}
-    chown %{username}:%{usergroup} %{authkeys}
+    ${RUN_FONEHOME} cat %{servpubkey} \
+      | ${RUN_FONEHOME} sed -r 's/^((ssh|ecdsa)-[^[:space:]]+[[:space:]].*)$/# %{authkeys_comment}\n%{authkeys_options} \1/g' \
+      | ${RUN_FONEHOME} tee %{authkeys} >/dev/null
 fi
 
 %files server
@@ -213,7 +212,7 @@ fi
 %config(noreplace missingok) %{portsfile}
 %dir %attr(755,%{username},%{usergroup}) %{serverdir}
 %dir %attr(700,%{username},%{usergroup}) %{serverdir}/.ssh
-%ghost %verify(not size md5 mtime) %attr(600,root,root) %{servprikey}
+%ghost %verify(not size md5 mtime) %attr(600,%{username},%{usergroup}) %{servprikey}
 %ghost %verify(not size md5 mtime) %attr(644,%{username},%{usergroup}) %{servpubkey}
 %ghost %verify(not size md5 mtime) %attr(644,%{username},%{usergroup}) %{authkeys}
 
