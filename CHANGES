@@ -1,4 +1,4 @@
-Version Next
+Version 1.1.1 Released October 25, 2019
 
     - Filter zero bytes from /proc/X/cmdline to avoid bash warning
     - Run %post commands with reduced privileges to avoid security races
