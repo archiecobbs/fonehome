@@ -36,6 +36,8 @@
 %define servprikey  %{serverdir}/.ssh/id_rsa
 %define servpubkey  %{servprikey}.pub
 %define authkeys    %{serverdir}/.ssh/authorized_keys
+%define compldir    %{_sysconfdir}/bash_completion.d
+%define complfile   %{compldir}/fhssh.sh
 
 %define authkeys_comment    restrict what %{username} user can do
 %define authkeys_options    no-X11-forwarding,no-agent-forwarding,no-pty,permitopen="0.0.0.0:9",command="sleep 99999d"
@@ -94,6 +96,7 @@ subst < src/scripts/fonehome-init.sh > fonehome-init
 subst < src/scripts/fonehome.sh > fonehome
 subst < src/scripts/fhshow.sh > fhshow
 subst < src/scripts/fhssh.sh > fhssh
+subst < src/scripts/bash-completion.sh > bash-completion
 subst < src/man/fhssh.1 > fhssh.1
 subst < src/man/fhscp.1 > fhscp.1
 subst < src/man/fhshow.1 > fhshow.1
@@ -128,6 +131,10 @@ install -d %{buildroot}%{clientdir}
 install fonehome.conf.sample %{buildroot}%{clientdir}/
 install fonehome.conf.sample %{buildroot}%{conffile}
 install fonehome-ports.conf.sample %{buildroot}%{portsfile}
+
+# bash completion
+install -d %{buildroot}%{compldir}
+install -m 0755 bash-completion %{buildroot}%{complfile}
 
 # fonehome user
 install -d %{buildroot}%{serverdir}/.ssh
@@ -209,6 +216,7 @@ fi
 %attr(755,root,root) %{_bindir}/fhshow
 %attr(755,root,root) %{_bindir}/fhssh
 %attr(755,root,root) %{_bindir}/fhscp
+%attr(755,root,root) %{complfile}
 %config(noreplace missingok) %{portsfile}
 %dir %attr(755,%{username},%{usergroup}) %{serverdir}
 %dir %attr(700,%{username},%{usergroup}) %{serverdir}/.ssh
