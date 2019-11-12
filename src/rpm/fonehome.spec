@@ -134,7 +134,7 @@ install fonehome-ports.conf.sample %{buildroot}%{portsfile}
 
 # bash completion
 install -d %{buildroot}%{compldir}
-install -m 0755 bash-completion %{buildroot}%{complfile}
+install bash-completion %{buildroot}%{complfile}
 
 # fonehome user
 install -d %{buildroot}%{serverdir}/.ssh
@@ -216,7 +216,7 @@ fi
 %attr(755,root,root) %{_bindir}/fhshow
 %attr(755,root,root) %{_bindir}/fhssh
 %attr(755,root,root) %{_bindir}/fhscp
-%attr(755,root,root) %{complfile}
+%{complfile}
 %config(noreplace missingok) %{portsfile}
 %dir %attr(755,%{username},%{usergroup}) %{serverdir}
 %dir %attr(700,%{username},%{usergroup}) %{serverdir}/.ssh
