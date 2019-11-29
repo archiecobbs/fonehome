@@ -28,10 +28,10 @@ _fhssh()
 _fhscp()
 {
     local cur="${COMP_WORDS[COMP_CWORD]}"
+    local hostpat='^('"`_read_fonehome_hosts | tr \\n \|`"'):'
     case "${COMP_CWORD}" in
     2)
         local prev="${COMP_WORDS[${COMP_CWORD} - 1]}"
-        local hostpat='^('"`_read_fonehome_hosts | tr \\n \|`"'):'
         if [[ "${prev}" =~ ${hostpat} ]]; then
             COMPREPLY=()
         else
@@ -40,8 +40,14 @@ _fhscp()
         fi
         ;;
     1)
-        compopt -o nospace
-        COMPREPLY=( $( compgen -o default -W "`_read_fonehome_hosts :`" -- "${cur}" ) )
+        if [[ "${cur}" =~ ${hostpat} ]]; then
+            COMPREPLY=()
+        elif ! [[ "${cur}" =~ / ]]; then
+            compopt -o nospace
+            COMPREPLY=( $( compgen -W "`_read_fonehome_hosts :`" -- "${cur}" ) )
+        else
+            COMPREPLY=()
+        fi
         ;;
     *)
         COMPREPLY=()
