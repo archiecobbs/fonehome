@@ -1,0 +1,12 @@
+[Unit]
+Description=fonehome daemon
+Documentation=https://github.com/archiecobbs/fonehome
+After=network.target syslog.socket
+
+[Service]
+ExecStart=@fonehomescript@
+Restart=always
+RestartSec=30s
+
+[Install]
+WantedBy=multi-user.target

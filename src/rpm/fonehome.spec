@@ -20,7 +20,6 @@
 # client side
 %define clientdir   %{_datadir}/%{name}
 %define scriptfile  %{_bindir}/%{name}
-%define initfile    %{_sysconfdir}/init.d/%{name}
 %define confdir     %{_sysconfdir}/%{name}
 %define conffile    %{confdir}/%{name}.conf
 %define keyfile     %{confdir}/%{name}.key
@@ -87,7 +86,6 @@ subst()
       -e 's|@fonehomekey@|%{keyfile}|g' \
       -e 's|@fonehomehosts@|%{hostsfile}|g' \
       -e 's|@fonehomeretry@|%{retrydelay}|g' \
-      -e 's|@fonehomeinit@|%{initfile}|g' \
       -e 's|@fonehomescript@|%{scriptfile}|g' \
       -e 's|@fonehomelogfac@|%{syslogfac}|g'
 }
@@ -102,14 +100,15 @@ subst < src/man/fhssh.1 > fhssh.1
 subst < src/man/fhscp.1 > fhscp.1
 subst < src/man/fhshow.1 > fhshow.1
 subst < src/man/fonehome.1 > fonehome.1
+subst < src/unit/fonehome.service > fonehome.service
 
 %install
 
-# init script
-install -d %{buildroot}%{_sysconfdir}/init.d
-install fonehome-init %{buildroot}%{initfile}
+# systemd unit
+install -d %{buildroot}%{_unitdir}
+install -D -m 0644 %{name}.service %{buildroot}%{_unitdir}/
 install -d %{buildroot}%{_sbindir}
-ln -s %{initfile} %{buildroot}%{_sbindir}/rcfonehome
+ln -sf service %{buildroot}%{_sbindir}/rc%{name}
 
 # man pages
 install -d %{buildroot}%{_mandir}/man1
@@ -147,12 +146,18 @@ install /dev/null %{buildroot}%{servprikey}
 install /dev/null %{buildroot}%{servpubkey}
 install /dev/null %{buildroot}%{authkeys}
 
+%pre
+%service_add_pre %{name}.service
+
+%post
+%service_add_post %{name}.service
+
 %preun
-%{stop_on_removal %{name}}
+%service_del_preun %{name}.service
 
 %postun
-# No restart_on_update - don't kill the connection we are using to update this RPM with!
-%{insserv_cleanup}
+# Don't kill the connection we might be using to update this RPM with!
+%service_del_postun_without_restart %{name}.service
 
 %files
 %defattr(644,root,root,755)
@@ -160,11 +165,11 @@ install /dev/null %{buildroot}%{authkeys}
 %config(noreplace) %{conffile}
 %ghost %attr(644,root,root) %{hostsfile}
 %ghost %attr(600,root,root) %{keyfile}
-%attr(755,root,root) %{initfile}
+%{_unitdir}/%{name}.service
 %attr(755,root,root) %{scriptfile}
-%attr(755,root,root) %{_sbindir}/rcfonehome
+%attr(755,root,root) %{_sbindir}/rc%{name}
 %doc %{_datadir}/doc/packages/%{name}
-%{_mandir}/man1/fonehome.1*
+%{_mandir}/man1/%{name}.1*
 %{clientdir}
 
 %package server

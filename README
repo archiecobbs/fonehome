@@ -33,8 +33,8 @@ Instructions:
 
         5. Enable and start the fonehome init service:
 
-                $ chkconfig --add fonehome
-                $ /etc/init.d/fonehome start
+                $ systemctl enable fonehome
+                $ systemctl start fonehome
 
     If you keep /etc/fonehome-ports.conf up-to-date on the server,
     then you may find the following utilities useful:

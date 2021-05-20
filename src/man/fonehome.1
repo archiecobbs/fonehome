@@ -35,8 +35,9 @@ operations server without any firewall hassles.
 .Pp
 Normally
 .Nm
-is run as a daemon from
-.Pa @fonehomeinit@ .
+is run as a
+.Xr systemd 1
+service.
 However, upon first installation (or whenever a server's host key changes),
 a manual initialization step must be performed by running
 .Nm
