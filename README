@@ -8,7 +8,7 @@ you either do not control or do not want to reconfigure, but which allows
 normal outgoing TCP connections. It uses SSH to connect to a fonehome
 server to which you have direct access. This SSH connection includes
 reverse-forwarded TCP ports which in turn allow you to connect back to
-the remote machine.
+the remote machine using the included fhssh(1) and fhscp(1) utilities.
 
 Instructions:
 
