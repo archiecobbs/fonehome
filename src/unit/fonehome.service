@@ -1,5 +1,6 @@
 [Unit]
 Description=fonehome daemon
+Documentation=man:fonehome(1)
 Documentation=https://github.com/archiecobbs/fonehome
 After=network.target syslog.socket
 
