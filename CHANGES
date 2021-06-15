@@ -1,4 +1,4 @@
-Version Next
+Version 1.2.0 Released June 15, 2021
 
     - Added bash(1) completion scripts for fhssh(1) and fhscp(1)
     - Converted from /etc/init.d script to systemd unit file
