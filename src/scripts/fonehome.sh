@@ -198,7 +198,7 @@ subshell()
           -oServerAliveInterval=60 -oServerAliveCountMax=5 -oTCPKeepAlive=yes \
           -oCheckHostIP=no -i "${KEY_FILE[$INDEX]}" ${SSH_FLAGS[$INDEX]} "${USERNAME[$INDEX]}"@"${SERVER[$INDEX]}" >"${OUTPUT_FILE}" 2>&1
         if [ -s "${OUTPUT_FILE}" ]; then
-            log warn "connection to ${SERVER[$INDEX]} failed: `cat \"${OUTPUT_FILE}\"`"
+            log warn "connection to ${SERVER[$INDEX]} failed: `cat \"${OUTPUT_FILE}\" | tr \\\\n ' '`"
         else
             log warn "connection to ${SERVER[$INDEX]} failed"
         fi

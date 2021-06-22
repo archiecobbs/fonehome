@@ -1,3 +1,7 @@
+Version Next
+
+    - Substitute spaces for newlines when logging errors
+
 Version 1.2.0 Released June 15, 2021
 
     - Added bash(1) completion scripts for fhssh(1) and fhscp(1)
