@@ -17,7 +17,7 @@ log()
 # Find machine in ports file
 find_machine()
 {
-    for ARG in ${PARAMETERS[@]}; do
+    for ARG in "${PARAMETERS[@]}"; do
         for MACHINE in ${@}; do
             PATTERN="^([^@]+@)?${MACHINE/./\.}(:.*)?$"
             if [[ "${ARG}" =~ ${PATTERN} ]]; then
@@ -56,7 +56,7 @@ PORT=`grep -E "${PAT}" "${PORTSFILE}" | awk '{ if ( $2 == "'"${MACHINE}"'" ) { p
 
 # Edit parameters
 I=0
-for ARG in ${PARAMETERS[@]}; do
+for ARG in "${PARAMETERS[@]}"; do
     PATTERN="^([^@]+@)?${MACHINE/./\.}(:.*)?$"
     if [[ "${ARG}" =~ ${PATTERN} ]]; then
         PARAMETERS[$I]="${ARG/${MACHINE}/127.0.0.1}"

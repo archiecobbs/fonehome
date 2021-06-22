@@ -1,6 +1,7 @@
 Version Next
 
     - Substitute spaces for newlines when logging errors
+    - Fixed quoting issues in fhssh(1) and fhscp(1)
 
 Version 1.2.0 Released June 15, 2021
 
