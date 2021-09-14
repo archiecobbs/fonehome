@@ -209,6 +209,7 @@ subshell()
 # This function is used to ensure the subshells are killed when this script is killed
 killshells()
 {
+    set +e
     jobs -p | sed 's/^/-/g' | xargs -r kill --
     log info shutting down
     wait

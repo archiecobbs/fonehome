@@ -1,6 +1,7 @@
 Version Next
 
     - Added some systemd unit hardening directives
+    - Ignore errors from kill(1) during shutdown
 
 Version 1.2.1 Released June 22, 2021
 
