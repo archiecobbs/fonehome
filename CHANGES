@@ -1,3 +1,7 @@
+Version Next
+
+    - Added some systemd unit hardening directives
+
 Version 1.2.1 Released June 22, 2021
 
     - Substitute spaces for newlines when logging errors

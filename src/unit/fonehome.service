@@ -9,5 +9,17 @@ ExecStart=@fonehomescript@
 Restart=always
 RestartSec=30s
 
+# Security hardening
+ProtectSystem=full
+ProtectHome=true
+PrivateDevices=true
+ProtectHostname=true
+ProtectClock=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+RestrictRealtime=true
+
 [Install]
 WantedBy=multi-user.target
