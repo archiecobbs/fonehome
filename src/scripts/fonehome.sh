@@ -206,11 +206,12 @@ subshell()
     done
 }
 
-# This function is used to ensure the subshells are killed when this script is killed
+# This function is used to ensure the subshells are killed when this script is killed.
+# During system shutdown, they may already be dead, so ignore "No such process" errors from kill(1).
 killshells()
 {
     set +e
-    jobs -p | sed 's/^/-/g' | xargs -r kill --
+    jobs -p | sed 's/^/-/g' | xargs -r kill -- 2>/dev/null
     log info shutting down
     wait
     exit
